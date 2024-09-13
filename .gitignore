@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+*.pcm
+/iir-inline
+/iir-inline-dyn
+/iir-block
+/iir-block-dyn
