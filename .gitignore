@@ -34,5 +34,9 @@
 *.pcm
 /iir-sample
 /iir-sample-var
+/iir-sample-noinline
+/iir-sample-var-noinline
 /iir-block
 /iir-block-var
+/iir-sample-virt
+/iir-block-virt
