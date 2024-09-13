@@ -2,16 +2,16 @@
 
 Benchmark for different approaches of implementing cascaded 2nd order IIR filters in C++.
 
-|                         | processing   | section's process function is inlined?  | number of sections is compile-time? | dynamic dispatch? |
-| :---------------------- | :----------: | :-------------------------------------: | :---------------------------------: | :---------------: |
-| iir-sample              | sample-based | yes                                     | yes                                 | no                |
-| iir-sample-var          | sample-based | yes                                     | no                                  | no                |
-| iir-sample-noinline     | sample-based | no                                      | yes                                 | no                |
-| iir-sample-var-noinline | sample-based | no                                      | no                                  | no                |
-| iir-block               | frame-based  | no                                      | yes                                 | no                |
-| iir-block-var           | frame-based  | no                                      | no                                  | no                |
-| iir-sample-virt         | sample-based | no                                      | no                                  | yes               |
-| iir-block-virt          | frame-based  | no                                      | no                                  | yes               |
+|                         | processing   | sections' `process` functions are inlined? | number of sections is a compile-time constant? | dynamic dispatch? |
+| :---------------------- | :----------: | :----------------------------------------: | :--------------------------------------------: | :---------------: |
+| iir-sample              | sample-based | yes                                        | yes                                            | no                |
+| iir-sample-var          | sample-based | yes                                        | no                                             | no                |
+| iir-sample-noinline     | sample-based | no                                         | yes                                            | no                |
+| iir-sample-var-noinline | sample-based | no                                         | no                                             | no                |
+| iir-block               | frame-based  | no                                         | yes                                            | no                |
+| iir-block-var           | frame-based  | no                                         | no                                             | no                |
+| iir-sample-virt         | sample-based | no                                         | no                                             | yes               |
+| iir-block-virt          | frame-based  | no                                         | no                                             | yes               |
 
 * sample-based: The section's `process` function processes only 1 sample. The caller's loop processes sample-by-sample, and calls each section's `process` function in the loop body.
 * frame-based: The section's `process` function processes a frame (block). The caller's loop just calls each section's `process` function.
