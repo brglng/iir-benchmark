@@ -27,14 +27,14 @@ make run
 
 ## Result
 
-CPU: 
-OS:
+CPU: Core i9-13950HX 2.20 GHz
+OS: Ubuntu 24.04 under Windows 10 (WSL2)
 
-The performance measurement is represented in MCPS (million cycles per second), which means the number of CPU cycles costs per second of input audio data. Lower is better.
+The performance measurement is represented in MCPS (million cycles per second), which means the number of CPU cycles costs per second of input audio data. Smaller is better.
 
 | block\_size    | 1      | 32     | 256    | 512    | 1024   |
 | :------------- | :----: | :----: | :----: | :----: | :----: |
-| iir-inline     |        |        |        |        |        |
-| iir-inline-dyn |        |        |        |        |        |
-| iir-block      |        |        |        |        |        |
-| iir-block-dyn  |        |        |        |        |        |
+| iir-inline     | 4.13   | 3.95   | 3.95   | 4.02   | 4.03   |
+| iir-inline-dyn | 4.20   | 4.19   | 4.10   | 4.15   | 4.15   |
+| iir-block      | 5.79   | 7.65   | 9.56   | 9.82   | 10.85  |
+| iir-block-dyn  | 5.85   | 7.70   | 9.68   | 9.90   | 10.02  |
