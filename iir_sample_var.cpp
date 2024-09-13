@@ -119,7 +119,7 @@ int main(int argc, const char* argv[]) {
     }
 
     uint64_t start = __rdtsc();
-    for (volatile int i = 0; i < LEN; i += block_size) {
+    for (int i = 0; i < LEN; i += block_size) {
         iir.process(&xy[i], std::min(block_size, LEN - i));
     }
     uint64_t end = __rdtsc();
