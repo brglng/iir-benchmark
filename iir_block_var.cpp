@@ -124,7 +124,7 @@ int main(int argc, const char* argv[]) {
     uint64_t end = __rdtsc();
     printf("%s: block_size: %d, cycles: %lu, MCPS: %f\n", argv[0], block_size, end - start, (double)(end - start) / DURATION / 1e6);
 
-    FILE *outfile = fopen("iir-block-dyn-out.pcm", "wb");
+    FILE *outfile = fopen("iir-block-var-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);
     fclose(outfile);
 
