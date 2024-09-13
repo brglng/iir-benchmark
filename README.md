@@ -13,9 +13,9 @@ Benchmark for different approaches of implementing cascaded 2nd order IIR filter
 | iir-sample-virt         | sample-based | no                                         | no                                             | yes               |
 | iir-block-virt          | frame-based  | no                                         | no                                             | yes               |
 
-* sample-based: The section's `process` function processes only 1 sample. The caller's loop processes sample-by-sample, and calls each section's `process` function in the loop body.
-* frame-based: The section's `process` function processes a frame (block). The caller's loop just calls each section's `process` function.
-* dynamic dispatch: The section's `process` function is a virtual function and is not inlined/optimized by the compiler.
+* sample-based: Each section's `process` function processes only 1 sample. The caller's loop processes sample-by-sample, and calls each section's `process` function in the loop body.
+* frame-based: Each section's `process` function processes a frame (block). The caller just calls each section's `process` function.
+* dynamic dispatch: Each section's `process` function is a virtual function and is made not to be inlined/optimized by the compiler.
 
 ## Compile
 
