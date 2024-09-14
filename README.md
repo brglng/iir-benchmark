@@ -31,19 +31,24 @@ make run
 
 ## Result
 
-CPU: Core i9-13950HX 2.20 GHz
+### 1
 
-OS: Ubuntu 24.04 under Windows 10 (WSL2)
+* CPU: Core i9-13950HX 2.20 GHz
+* OS: Ubuntu 24.04 under Windows 10 (WSL2)
+* Compiler: GCC 13.2.0
+* Number of 2nd order sections: 20
 
 The performance measurement is represented in MCPS (million cycles per second), which means the number of CPU cycles costs per second of input audio data. Smaller is better.
 
 | block\_size              | 1      | 32     | 256    | 512    | 1024   |
 | :----------------------- | :----: | :----: | :----: | :----: | :----: |
-| iir-sample               | 4.13   | 3.95   | 3.95   | 4.02   | 4.03   |
-| iir-sample-var           | 4.20   | 4.19   | 4.10   | 4.15   | 4.15   |
-| iir-sample-noinline      |        |        |        |        |        |
-| iir-sample-var-noinline  |        |        |        |        |        |
-| iir-block                | 5.79   | 7.65   | 9.56   | 9.82   | 10.85  |
-| iir-block-var            | 5.85   | 7.70   | 9.68   | 9.90   | 10.02  |
+| iir-sample               | 4.09   | 3.98   | 3.94   | 3.94   | 3.97   |
+| iir-sample-var           | 4.12   | 4.10   | 4.07   | 4.14   | 4.02   |
+| iir-sample-noinline      | 4.58   | 4.47   | 4.23   | 4.30   | 4.46   |
+| iir-sample-var-noinline  | 4.52   | 4.40   | 4.28   | 4.50   | 4.28   |
+| iir-block                | 5.46   | 7.46   | 9.56   | 9.63   | 9.69   |
+| iir-block-var            | 5.83   | 7.66   | 9.54   | 9.49   | 9.68   |
 | iir-sample-virt          |        |        |        |        |        |
 | iir-block-virt           |        |        |        |        |        |
+
+### 2
