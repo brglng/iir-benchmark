@@ -27,16 +27,13 @@ public:
     Iir2nd(Iir2nd&&) = default;
     Iir2nd& operator=(Iir2nd&&) = default;
 
-    NOINLINE void process(float* xy, int block_size) {
-        for (int i = 0; i < block_size; ++i) {
-            float x = xy[i];
-            float y =  b[0] * x + b[1] * xd[0] + b[2] * xd[1] - a[0] * yd[0] - a[1] * yd[1];
-            xd[1] = xd[0];
-            xd[0] = x;
-            yd[1] = yd[0];
-            yd[0] = y;
-            xy[i] = y;
-        }
+    NOINLINE float process(float x) {
+        float y =  b[0] * x + b[1] * xd[0] + b[2] * xd[1] - a[0] * yd[0] - a[1] * yd[1];
+        xd[1] = xd[0];
+        xd[0] = x;
+        yd[1] = yd[0];
+        yd[0] = y;
+        return y;
     }
 };
 
@@ -70,8 +67,12 @@ public:
     }
 
     NOINLINE void process(float* xy, int block_size) {
-        for (int i = 0; i < m_num_sections; ++i) {
-            m_sections[i].process(xy, block_size);
+        for (int i = 0; i < block_size; ++i) {
+            float tmp = xy[i];
+            for (int j = 0; j < m_num_sections; ++j) {
+                tmp = m_sections[j].process(tmp);
+            }
+            xy[i] = tmp;
         }
     }
 
@@ -93,7 +94,7 @@ int main(int argc, const char* argv[]) {
     int block_size = atoi(argv[1]);
     int sections = atoi(argv[2]);
 
-    auto iir = Iir2ndCascaded{sections};
+    auto iir = Iir2ndCascaded(sections);
 
     for (int i = 0; i < sections; ++i) {
         // design a 2nd order peaking filter
@@ -131,7 +132,7 @@ int main(int argc, const char* argv[]) {
     uint64_t end = __rdtsc();
     printf("%-26s: duration: %5.2f, block_size: %4d, sections: %2d, cycles: %10lu, MCPS: %7.4f\n", argv[0], duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
 
-    FILE *outfile = fopen("iir-block-var-out.pcm", "wb");
+    FILE *outfile = fopen("iir-sample-var-noinline-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);
     fclose(outfile);
 

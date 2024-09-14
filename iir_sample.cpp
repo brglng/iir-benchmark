@@ -51,9 +51,9 @@ template<int N> struct Process<N, N - 1> {
     }
 };
 
-template<int SECTIONS>
+template<int N>
 class Iir2ndCascaded {
-    Iir2nd m_sections[SECTIONS];
+    Iir2nd m_sections[N];
 
 public:
     Iir2ndCascaded() {}
@@ -65,7 +65,7 @@ public:
     NOINLINE void process(float* xy, int block_size) {
         for (int i = 0; i < block_size; i++) {
             float x = xy[i];
-            float y = Process<SECTIONS>::process(m_sections, x);
+            float y = Process<N>::process(m_sections, x);
             xy[i] = y;
         }
     }
@@ -74,7 +74,6 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-    const int SECTIONS = 20;
     const int SAMPLE_RATE = 48000;
     const int DURATION = 600;
     const int LEN = SAMPLE_RATE * DURATION;
@@ -82,7 +81,7 @@ int main(int argc, const char* argv[]) {
     const float FMAX = 20000.f;
 
     if (argc < 2) {
-        fprintf(stderr, "missing block size\n");
+        fprintf(stderr, "missing block_size\n");
         return 1;
     }
 
@@ -106,18 +105,25 @@ int main(int argc, const char* argv[]) {
         iir.sections(i).a[1] = (1 - alpha / A) / a0;
     }
 
-    auto xy = std::make_unique<float[]>(LEN);
-    for (int i = 0; i < LEN; ++i) {
-        double t = i / (double)SAMPLE_RATE;
-        xy[i] = 0.5f * std::cos(2.0f * (float)M_PI * FMIN * DURATION * (std::pow((double)FMAX / FMIN, t / DURATION) - 1) / std::log((double)FMAX / FMIN));
-    }
+    FILE* infile = fopen("chirp.pcm", "rb");
+    fseek(infile, 0, SEEK_END);
+    long size = ftell(infile);
+    int len = size / sizeof(float);
+    auto xy = std::make_unique<float[]>(len);
+    fseek(infile, 0, SEEK_SET);
+    size_t read_bytes = 0;
+    do {
+        read_bytes += fread(xy.get(), sizeof(float), size - read_bytes, infile);
+    } while (read_bytes < len);
+    fclose(infile);
+    float duration = (float)len / SAMPLE_RATE;
 
     uint64_t start = __rdtsc();
     for (int i = 0; i < LEN; i += block_size) {
         iir.process(&xy[i], std::min(block_size, LEN - i));
     }
     uint64_t end = __rdtsc();
-    printf("%s: block_size: %d, cycles: %lu, MCPS: %f\n", argv[0], block_size, end - start, (double)(end - start) / DURATION / 1e6);
+    printf("%-26s: duration: %5.2f, block_size: %4d, sections: %2d, cycles: %10lu, MCPS: %7.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / DURATION / 1e6);
 
     FILE *outfile = fopen("iir-sample-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);

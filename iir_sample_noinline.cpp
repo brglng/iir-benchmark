@@ -27,55 +27,50 @@ public:
     Iir2nd(Iir2nd&&) = default;
     Iir2nd& operator=(Iir2nd&&) = default;
 
-    NOINLINE void process(float* xy, int block_size) {
-        for (int i = 0; i < block_size; ++i) {
-            float x = xy[i];
-            float y =  b[0] * x + b[1] * xd[0] + b[2] * xd[1] - a[0] * yd[0] - a[1] * yd[1];
-            xd[1] = xd[0];
-            xd[0] = x;
-            yd[1] = yd[0];
-            yd[0] = y;
-            xy[i] = y;
-        }
+    NOINLINE float process(float x) {
+        float y =  b[0] * x + b[1] * xd[0] + b[2] * xd[1] - a[0] * yd[0] - a[1] * yd[1];
+        xd[1] = xd[0];
+        xd[0] = x;
+        yd[1] = yd[0];
+        yd[0] = y;
+        return y;
     }
 };
 
+template<int N, int I = 0> struct Process {
+    static INLINE float process(Iir2nd *sections, float x) {
+        float y = sections[I].process(x);
+        return Process<N, I + 1>::process(sections, y);
+    }
+};
+
+template<int N> struct Process<N, N - 1> {
+    static INLINE float process(Iir2nd *sections, float x) {
+        float y = sections[N - 1].process(x);
+        return y;
+    }
+};
+
+template<int N>
 class Iir2ndCascaded {
-    Iir2nd *m_sections;
-    int m_num_sections;
+    Iir2nd m_sections[N];
 
 public:
-    Iir2ndCascaded(int num_sections) {
-        m_sections = new Iir2nd[num_sections];
-        m_num_sections = num_sections;
-    }
-
-    Iir2ndCascaded(const Iir2ndCascaded&) = delete;
-    Iir2ndCascaded& operator=(const Iir2ndCascaded&) = delete;
-
-    Iir2ndCascaded(Iir2ndCascaded&& that) :
-        m_sections{that.m_sections},
-        m_num_sections{that.m_num_sections}
-    {
-        that.m_sections = nullptr;
-    }
-
-    Iir2ndCascaded& operator=(Iir2ndCascaded&& that) {
-        new (this) Iir2ndCascaded(std::move(that));
-        return *this;
-    }
-
-    ~Iir2ndCascaded() {
-        delete[] m_sections;
-    }
+    Iir2ndCascaded() {}
+    Iir2ndCascaded(const Iir2ndCascaded&) = default;
+    Iir2ndCascaded& operator=(const Iir2ndCascaded&) = default;
+    Iir2ndCascaded(Iir2ndCascaded&&) = default;
+    Iir2ndCascaded& operator=(Iir2ndCascaded&&) = default;
 
     NOINLINE void process(float* xy, int block_size) {
-        for (int i = 0; i < m_num_sections; ++i) {
-            m_sections[i].process(xy, block_size);
+        for (int i = 0; i < block_size; i++) {
+            float x = xy[i];
+            float y = Process<N>::process(m_sections, x);
+            xy[i] = y;
         }
     }
 
-    Iir2nd& sections(int i) const { return m_sections[i]; }
+    Iir2nd& sections(int i) { return m_sections[i]; }
 };
 
 int main(int argc, const char* argv[]) {
@@ -85,19 +80,18 @@ int main(int argc, const char* argv[]) {
     const float FMIN = 20.f;
     const float FMAX = 20000.f;
 
-    if (argc < 3) {
-        fprintf(stderr, "missing block_size or num_sections\n");
+    if (argc < 2) {
+        fprintf(stderr, "missing block_size\n");
         return 1;
     }
 
     int block_size = atoi(argv[1]);
-    int sections = atoi(argv[2]);
 
-    auto iir = Iir2ndCascaded{sections};
+    auto iir = Iir2ndCascaded<SECTIONS>{};
 
-    for (int i = 0; i < sections; ++i) {
+    for (int i = 0; i < SECTIONS; ++i) {
         // design a 2nd order peaking filter
-        float freq = FMIN * std::pow(FMAX / FMIN, (float)(i + 1) / (sections + 1));
+        float freq = FMIN * std::pow(FMAX / FMIN, (float)(i + 1) / (SECTIONS + 1));
         float q = 4.f;
         float gain = std::pow(0.5f, (i % 2) * 2 - 1);
         float w0 = 2 * (float)M_PI * freq / static_cast<float>(SAMPLE_RATE);
@@ -129,9 +123,9 @@ int main(int argc, const char* argv[]) {
         iir.process(&xy[i], std::min(block_size, LEN - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %5.2f, block_size: %4d, sections: %2d, cycles: %10lu, MCPS: %7.4f\n", argv[0], duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
+    printf("%-26s: duration: %5.2f, block_size: %4d, sections: %2d, cycles: %10lu, MCPS: %7.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / DURATION / 1e6);
 
-    FILE *outfile = fopen("iir-block-var-out.pcm", "wb");
+    FILE *outfile = fopen("iir-sample-noinline-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);
     fclose(outfile);
 

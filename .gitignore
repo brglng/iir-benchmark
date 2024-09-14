@@ -32,6 +32,7 @@
 *.app
 
 *.pcm
+/chirp
 /iir-sample
 /iir-sample-var
 /iir-sample-noinline
