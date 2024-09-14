@@ -29,7 +29,7 @@ make
 make run
 ```
 
-## Result
+## Results
 
 ### 1
 
