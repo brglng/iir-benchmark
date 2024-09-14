@@ -1,4 +1,7 @@
-.PHONY: all all-tests run run1 run32 run256 run512 run1024
+SECTIONS ?= 20
+DURATION ?= 600
+
+.PHONY: all all-tests run run-chirp run1 run32 run256 run512 run1024 clean
 
 all: chirp all-tests
 
@@ -6,11 +9,10 @@ all-tests: iir-sample iir-sample-var iir-sample-noinline iir-sample-var-noinline
 
 run: run1 run32 run256 run512 run1024
 
-SECTIONS ?= 20
-DURATION ?= 600
-
-run1: chirp all-tests
+run-chirp: chirp
 	@./chirp $(DURATION)
+
+run1: run-chirp all-tests
 	@./iir-sample 1
 	@./iir-sample-var 1 $(SECTIONS)
 	@./iir-sample-noinline 1
@@ -18,8 +20,7 @@ run1: chirp all-tests
 	@./iir-block 1
 	@./iir-block-var 1 $(SECTIONS)
 
-run32: chirp all-tests
-	@./chirp $(DURATION)
+run32: run-chirp all-tests
 	@./iir-sample 32
 	@./iir-sample-var 32 $(SECTIONS)
 	@./iir-sample-noinline 32
@@ -27,8 +28,7 @@ run32: chirp all-tests
 	@./iir-block 32
 	@./iir-block-var 32 $(SECTIONS)
 
-run256: chirp all-tests
-	@./chirp $(DURATION)
+run256: run-chirp all-tests
 	@./iir-sample 256
 	@./iir-sample-var 256 $(SECTIONS)
 	@./iir-sample-noinline 256
@@ -36,8 +36,7 @@ run256: chirp all-tests
 	@./iir-block 256
 	@./iir-block-var 256 $(SECTIONS)
 
-run512: chirp all-tests
-	@./chirp $(DURATION)
+run512: run-chirp all-tests
 	@./iir-sample 512
 	@./iir-sample-var 512 $(SECTIONS)
 	@./iir-sample-noinline 512
@@ -45,8 +44,7 @@ run512: chirp all-tests
 	@./iir-block 512
 	@./iir-block-var 512 $(SECTIONS)
 
-run1024: chirp all-tests
-	@./chirp $(DURATION)
+run1024: run-chirp all-tests
 	@./iir-sample 1024
 	@./iir-sample-var 1024 $(SECTIONS)
 	@./iir-sample-noinline 1024
@@ -74,3 +72,6 @@ iir-block: iir_block.cpp
 
 iir-block-var: iir_block_var.cpp
 	g++ -std=c++17 -O3 -W -Wall -o $@ $<
+
+clean:
+	rm -f chirp iir-sample iir-sample-var iir-sample-noinline iir-sample-var-noinline iir-block iir-block-var *.pcm
