@@ -20,13 +20,14 @@ Benchmark for different approaches of implementing cascaded 2nd order IIR filter
 ## Compile
 
 ```sh
-make
+xmake config [--duration=<DURATION>] [--sections=<SECTIONS>]
+xmake build <TARGET>
 ```
 
 ## Run
 
 ```sh
-make run
+xmake run <TARGET> <BLOCK_SIZE> <SECTIONS>
 ```
 
 ## Results

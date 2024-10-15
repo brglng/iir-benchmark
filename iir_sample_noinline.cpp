@@ -7,8 +7,13 @@
 #include <x86intrin.h>
 #endif
 
+#ifdef _MSC_VER
+#define INLINE __forceinline
+#define NOINLINE __declspec(noinline)
+#else
 #define INLINE __attribute__((always_inline))
 #define NOINLINE __attribute__((noinline))
+#endif
 
 class Iir2nd {
     float xd[2];

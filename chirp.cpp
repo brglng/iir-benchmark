@@ -2,6 +2,10 @@
 #include <cstdio>
 #include <memory>
 
+#ifdef _MSC_VER
+#define M_PI 3.14159265358979323846
+#endif
+
 int main(int argc, char *argv[]) {
     const int SAMPLE_RATE = 48000;
     const float FMIN = 20.f;
