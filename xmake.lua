@@ -17,6 +17,7 @@ option('duration', {
 target('chirp', {
     kind = 'binary',
     files = { 'chirp.cpp' },
+    languages = { 'cxx17' },
     options = {
         'sections',
         'duration'
