@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdio>
+#include <cinttypes>
 #include <memory>
 #ifdef _WIN32
 #include <intrin.h>
@@ -136,7 +137,7 @@ int main(int argc, const char* argv[]) {
         iir.process(&xy[i], std::min(block_size, LEN - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12lu, MCPS: %8.4f\n", argv[0], duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
+    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", argv[0], duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
 
     FILE *outfile = fopen("iir-sample-var-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);

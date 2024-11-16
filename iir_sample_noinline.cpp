@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdio>
+#include <cinttypes>
 #include <memory>
 #ifdef _WIN32
 #include <intrin.h>
@@ -10,6 +11,7 @@
 #ifdef _MSC_VER
 #define INLINE __forceinline
 #define NOINLINE __declspec(noinline)
+#define M_PI 3.14159265358979323846
 #else
 #define INLINE __attribute__((always_inline))
 #define NOINLINE __attribute__((noinline))
@@ -44,15 +46,14 @@ public:
 
 template<int N, int I = 0> struct Process {
     static INLINE float process(Iir2nd *sections, float x) {
-        float y = sections[I].process(x);
-        return Process<N, I + 1>::process(sections, y);
+        float y =  Process<N, I - 1>::process(sections, y);
+        return sections[I].process(y);
     }
 };
 
-template<int N> struct Process<N, N - 1> {
+template<int N> struct Process<N, 0> {
     static INLINE float process(Iir2nd *sections, float x) {
-        float y = sections[N - 1].process(x);
-        return y;
+        return sections[0].process(x);
     }
 };
 
@@ -128,7 +129,7 @@ int main(int argc, const char* argv[]) {
         iir.process(&xy[i], std::min(block_size, LEN - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12lu, MCPS: %8.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / DURATION / 1e6);
+    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / DURATION / 1e6);
 
     FILE *outfile = fopen("iir-sample-noinline-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);

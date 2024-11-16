@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdio>
+#include <cinttypes>
 #include <memory>
 #ifdef _WIN32
 #include <intrin.h>
@@ -46,16 +47,16 @@ public:
     }
 };
 
-template<int N, int I = 0> struct Process {
+template<int N, int I = N - 1> struct Process {
     static INLINE void process(Iir2nd *sections, float* xy, int block_size) {
+        Process<N, I - 1>::process(sections, xy, block_size);
         sections[I].process(xy, block_size);
-        Process<N, I + 1>::process(sections, xy, block_size);
     }
 };
 
-template<int N> struct Process<N, N - 1> {
+template<int N> struct Process<N, 0> {
     static INLINE void process(Iir2nd *sections, float* xy, int block_size) {
-        sections[N - 1].process(xy, block_size);
+        sections[0].process(xy, block_size);
     }
 };
 
@@ -125,7 +126,7 @@ int main(int argc, const char* argv[]) {
         iir.process(&xy[i], std::min(block_size, len - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12lu, MCPS: %8.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / duration / 1e6);
+    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / duration / 1e6);
 
     FILE *outfile = fopen("iir-block-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), len, outfile);

@@ -116,7 +116,7 @@ target('1024', {
     on_run = function (target)
         import('core.project.project')
         for targetname, target in pairs(project.targets()) do
-            os.runv(target:targetfile(), { '512', tostring(option.get('sections')) })
+            os.runv(target:targetfile(), { '1024', tostring(option.get('sections')) })
         end
     end
 })
