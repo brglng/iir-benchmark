@@ -1,123 +1,231 @@
-option('sections', {
-    default = 20,
-    showmenu = true,
-    after_check = function (option)
+option('sections', function ()
+    set_default(20)
+    set_showmenu(true)
+    after_check(function (option)
         option:add('defines', 'SECTIONS=' .. option:value())
-    end
-})
+    end)
+end)
 
-option('duration', {
-    default = 600,
-    showmenu = true,
-    after_check = function (option)
+option('duration', function ()
+    set_default(600)
+    set_showmenu(true)
+    after_check(function (option)
         option:add('defines', 'DURATION=' .. option:value())
-    end
-})
+    end)
+end)
 
-target('chirp', {
-    kind = 'binary',
-    files = { 'chirp.cpp' },
-    languages = { 'cxx17' },
-    options = {
+target('chirp', function ()
+    set_kind('binary')
+    add_files('chirp.cpp')
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
+    end
+    set_options(
         'sections',
         'duration'
-    }
-})
+    )
+end)
 
-target('iir-sample', {
-    kind = 'binary',
-    files = { 'iir_sample.cpp' },
-    languages = { 'cxx17' },
-    options = { 'sections' }
-})
-
-target('iir-sample-var', {
-    kind = "binary",
-    files = { "iir_sample_var.cpp" },
-    languages = { 'cxx17' },
-    options = { 'sections' }
-})
-
-target('iir-sample-noinline', {
-    kind = 'binary',
-    files = { 'iir_sample_noinline.cpp' },
-    languages = { 'cxx17' },
-    options = { 'sections' }
-})
-
-target('iir-sample-var-noinline', {
-    kind = 'binary',
-    files = { 'iir_sample_var_noinline.cpp' },
-    languages = { 'cxx17' },
-    options = { 'sections' }
-})
-
-target('iir-block', {
-    kind = 'binary',
-    files = { 'iir_block.cpp' },
-    languages = { 'cxx17' },
-    options = { 'sections' }
-})
-
-target('iir-block-var', {
-    kind = 'binary',
-    files = { 'iir_block_var.cpp' },
-    languages = { 'cxx17' },
-    options = { 'sections' }
-})
-
-target('1', {
-    kind = 'phony',
-    deps = { 'chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var' },
-    on_run = function (target)
-        import('core.project.project')
-        for targetname, target in pairs(project.targets()) do
-            os.runv(target:targetfile(), { '1', tostring(option.get('sections')) })
-        end
+target('iir-sample', function ()
+    set_kind('binary')
+    add_files('iir_sample.cpp')
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
     end
-})
+    set_options('sections')
+end)
 
-target('32', {
-    kind = 'phony',
-    deps = { 'chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var' },
-    on_run = function (target)
-        import('core.project.project')
-        for targetname, target in pairs(project.targets()) do
-            os.runv(target:targetfile(), { '32', tostring(option.get('sections')) })
-        end
+target('iir-sample-var', function ()
+    set_kind("binary")
+    add_files("iir_sample_var.cpp")
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
     end
-})
+    set_options('sections')
+end)
 
-target('256', {
-    kind = 'phony',
-    deps = { 'chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var' },
-    on_run = function (target)
-        import('core.project.project')
-        for targetname, target in pairs(project.targets()) do
-            os.runv(target:targetfile(), { '256', tostring(option.get('sections')) })
-        end
+target('iir-sample-noinline', function ()
+    set_kind('binary')
+    add_files('iir_sample_noinline.cpp')
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
     end
-})
+    set_options('sections')
+end)
 
-target('512', {
-    kind = 'phony',
-    deps = { 'chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var' },
-    on_run = function (target)
-        import('core.project.project')
-        os.runv(project.target('chirp'):targetfile(), option.get('duration'))
-        for targetname, target in pairs(project.targets()) do
-            os.runv(target:targetfile(), { '512', tostring(option.get('sections')) })
-        end
+target('iir-sample-var-noinline', function ()
+    set_kind('binary')
+    add_files('iir_sample_var_noinline.cpp')
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
     end
-})
+    set_options('sections')
+end)
 
-target('1024', {
-    kind = 'phony',
-    deps = { 'chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var' },
-    on_run = function (target)
-        import('core.project.project')
-        for targetname, target in pairs(project.targets()) do
-            os.runv(target:targetfile(), { '1024', tostring(option.get('sections')) })
-        end
+target('iir-block', function ()
+    set_kind('binary')
+    add_files('iir_block.cpp')
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
     end
-})
+    set_options('sections')
+end)
+
+target('iir-block-var', function ()
+    set_kind('binary')
+    add_files('iir_block_var.cpp')
+    set_languages('cxx17')
+    if get_config('mode') == "debug" then
+        set_optimize("none")
+    elseif get_config("mode") == "release" then
+        set_optimize("fastest")
+    end
+    set_options('sections')
+end)
+
+target('1', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (_)
+        import("core.project.config")
+        import("core.project.project")
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '1', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('16', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (_)
+        import("core.project.config")
+        import("core.project.project")
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '16', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('32', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (target)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '32', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('64', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (_)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '64', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('128', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (_)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '128', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('256', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (_)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '256', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('512', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (_)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '512', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('1024', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    set_options('sections')
+    on_run(function (_)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.runv(project.target(dep):targetfile(), { '1024', config.get('sections') })
+            end
+        end
+    end)
+end)
