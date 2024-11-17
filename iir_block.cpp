@@ -89,6 +89,16 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
+#ifdef _WIN32
+    const char* prog = strrchr(argv[0], '\\');
+#else
+    const char* prog = strrchr(argv[0], '/');
+#endif
+    if (prog)
+        ++prog;
+    else
+        prog = argv[0];
+
     int block_size = atoi(argv[1]);
 
     auto iir = Iir2ndCascaded<SECTIONS>{};
@@ -127,7 +137,7 @@ int main(int argc, const char* argv[]) {
         iir.process(&xy[i], std::min(block_size, len - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", argv[0], duration, block_size, SECTIONS, end - start, (double)(end - start) / duration / 1e6);
+    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", prog, duration, block_size, SECTIONS, end - start, (double)(end - start) / duration / 1e6);
 
     FILE *outfile = fopen("iir-block-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), len, outfile);

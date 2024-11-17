@@ -99,6 +99,16 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
+#ifdef _WIN32
+    const char* prog = strrchr(argv[0], '\\');
+#else
+    const char* prog = strrchr(argv[0], '/');
+#endif
+    if (prog)
+        ++prog;
+    else
+        prog = argv[0];
+
     int block_size = atoi(argv[1]);
     int sections = atoi(argv[2]);
 
@@ -138,7 +148,7 @@ int main(int argc, const char* argv[]) {
         iir.process(&xy[i], std::min(block_size, LEN - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", argv[0], duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
+    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", prog, duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
 
     FILE *outfile = fopen("iir-sample-var-noinline-out.pcm", "wb");
     fwrite(xy.get(), sizeof(float), LEN, outfile);

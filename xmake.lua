@@ -109,9 +109,57 @@ target('1', function ()
         import("core.project.project")
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '1', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '1', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('2', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (target)
+        import("core.project.config")
+        import("core.project.project")
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.execv(project.target(dep):targetfile(), { '2', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('4', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (target)
+        import("core.project.config")
+        import("core.project.project")
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.execv(project.target(dep):targetfile(), { '4', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('8', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    on_run(function (target)
+        import("core.project.config")
+        import("core.project.project")
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.execv(project.target(dep):targetfile(), { '8', config.get('sections') })
             end
         end
     end)
@@ -125,9 +173,9 @@ target('16', function ()
         import("core.project.project")
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '16', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '16', config.get('sections') })
             end
         end
     end)
@@ -141,9 +189,9 @@ target('32', function ()
         import('core.project.project')
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '32', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '32', config.get('sections') })
             end
         end
     end)
@@ -157,9 +205,9 @@ target('64', function ()
         import('core.project.project')
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '64', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '64', config.get('sections') })
             end
         end
     end)
@@ -173,9 +221,9 @@ target('128', function ()
         import('core.project.project')
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '128', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '128', config.get('sections') })
             end
         end
     end)
@@ -189,9 +237,9 @@ target('256', function ()
         import('core.project.project')
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '256', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '256', config.get('sections') })
             end
         end
     end)
@@ -200,14 +248,14 @@ end)
 target('512', function ()
     set_kind('phony')
     add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
-    on_run(function (targe)
+    on_run(function (target)
         import('core.project.config')
         import('core.project.project')
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '512', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '512', config.get('sections') })
             end
         end
     end)
@@ -222,9 +270,43 @@ target('1024', function ()
         import('core.project.project')
         for _, dep in ipairs(target:get("deps")) do
             if dep == "chirp" then
-                os.runv(project.target(dep):targetfile(), { config.get('duration') })
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
             else
-                os.runv(project.target(dep):targetfile(), { '1024', config.get('sections') })
+                os.execv(project.target(dep):targetfile(), { '1024', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('2048', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    set_options('sections')
+    on_run(function (target)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.execv(project.target(dep):targetfile(), { '2048', config.get('sections') })
+            end
+        end
+    end)
+end)
+
+target('4096', function ()
+    set_kind('phony')
+    add_deps('chirp', 'iir-sample', 'iir-sample-var', 'iir-sample-noinline', 'iir-sample-var-noinline', 'iir-block', 'iir-block-var')
+    set_options('sections')
+    on_run(function (target)
+        import('core.project.config')
+        import('core.project.project')
+        for _, dep in ipairs(target:get("deps")) do
+            if dep == "chirp" then
+                os.execv(project.target(dep):targetfile(), { config.get('duration') })
+            else
+                os.execv(project.target(dep):targetfile(), { '4096', config.get('sections') })
             end
         end
     end)
