@@ -47,7 +47,7 @@ public:
 
 template<int N, int I = N - 1> struct Process {
     static INLINE float process(Iir2nd *sections, float x) {
-        float y =  Process<N, I - 1>::process(sections, y);
+        float y =  Process<N, I - 1>::process(sections, x);
         return sections[I].process(y);
     }
 };
