@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <memory>
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #define M_PI 3.14159265358979323846
 #endif
 

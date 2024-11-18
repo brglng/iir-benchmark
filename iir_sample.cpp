@@ -13,10 +13,13 @@
 #ifdef _MSC_VER
 #define INLINE __forceinline
 #define NOINLINE __declspec(noinline)
-#define M_PI 3.14159265358979323846
 #else
 #define INLINE __attribute__((always_inline))
 #define NOINLINE __attribute__((noinline))
+#endif
+
+#ifdef _WIN32
+#define M_PI 3.14159265358979323846
 #endif
 
 class Iir2nd {
