@@ -87,10 +87,8 @@ public:
     Iir2nd& sections(int i) const { return m_sections[i]; }
 };
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char* argv[]) {
     const int SAMPLE_RATE = 48000;
-    const int DURATION = 600;
-    const int LEN = SAMPLE_RATE * DURATION;
     const float FMIN = 20.f;
     const float FMAX = 20000.f;
 
@@ -100,14 +98,14 @@ int main(int argc, const char* argv[]) {
     }
 
 #ifdef _WIN32
-    const char* prog = strrchr(argv[0], '\\');
+    char* prog = strrchr(argv[0], '\\');
 #else
-    const char* prog = strrchr(argv[0], '/');
+    char* prog = strrchr(argv[0], '/');
 #endif
-    if (prog)
-        ++prog;
-    else
-        prog = argv[0];
+    prog = prog ? prog + 1 : argv[0];
+    if (strlen(prog) >= 4 && strcmp(&prog[strlen(prog) - 4], ".exe") == 0) {
+        prog[strlen(prog) - 4] = '\0';
+    }
 
     int block_size = atoi(argv[1]);
     int sections = atoi(argv[2]);
@@ -136,22 +134,22 @@ int main(int argc, const char* argv[]) {
     int len = size / sizeof(float);
     auto xy = std::make_unique<float[]>(len);
     fseek(infile, 0, SEEK_SET);
-    size_t read_bytes = 0;
+    size_t read_count = 0;
     do {
-        read_bytes += fread(xy.get(), sizeof(float), size - read_bytes, infile);
-    } while (read_bytes < len);
+        read_count += fread(xy.get(), sizeof(float), len - read_count, infile);
+    } while (read_count < len);
     fclose(infile);
     float duration = (float)len / SAMPLE_RATE;
 
     uint64_t start = __rdtsc();
-    for (int i = 0; i < LEN; i += block_size) {
-        iir.process(&xy[i], std::min(block_size, LEN - i));
+    for (int i = 0; i < len; i += block_size) {
+        iir.process(&xy[i], std::min(block_size, len - i));
     }
     uint64_t end = __rdtsc();
-    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", prog, duration, block_size, sections, end - start, (double)(end - start) / DURATION / 1e6);
+    printf("%-26s: duration: %6.2f, block_size: %4d, sections: %3d, cycles: %12" PRIu64 ", MCPS: %8.4f\n", prog, duration, block_size, sections, end - start, (double)(end - start) / duration / 1e6);
 
     FILE *outfile = fopen("iir-sample-var-noinline-out.pcm", "wb");
-    fwrite(xy.get(), sizeof(float), LEN, outfile);
+    fwrite(xy.get(), sizeof(float), len, outfile);
     fclose(outfile);
 
     return 0;

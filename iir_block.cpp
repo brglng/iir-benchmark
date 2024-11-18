@@ -79,7 +79,7 @@ public:
     Iir2nd& sections(int i) { return m_sections[i]; }
 };
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char* argv[]) {
     const int SAMPLE_RATE = 48000;
     const float FMIN = 20.f;
     const float FMAX = 20000.f;
@@ -90,14 +90,14 @@ int main(int argc, const char* argv[]) {
     }
 
 #ifdef _WIN32
-    const char* prog = strrchr(argv[0], '\\');
+    char* prog = strrchr(argv[0], '\\');
 #else
-    const char* prog = strrchr(argv[0], '/');
+    char* prog = strrchr(argv[0], '/');
 #endif
-    if (prog)
-        ++prog;
-    else
-        prog = argv[0];
+    prog = prog ? prog + 1 : argv[0];
+    if (strlen(prog) >= 4 && strcmp(&prog[strlen(prog) - 4], ".exe") == 0) {
+        prog[strlen(prog) - 4] = '\0';
+    }
 
     int block_size = atoi(argv[1]);
 
@@ -125,10 +125,10 @@ int main(int argc, const char* argv[]) {
     int len = size / sizeof(float);
     auto xy = std::make_unique<float[]>(len);
     fseek(infile, 0, SEEK_SET);
-    size_t read_bytes = 0;
+    size_t read_count = 0;
     do {
-        read_bytes += fread(xy.get(), sizeof(float), size - read_bytes, infile);
-    } while (read_bytes < len);
+        read_count += fread(xy.get(), sizeof(float), len - read_count, infile);
+    } while (read_count < len);
     fclose(infile);
     float duration = (float)len / SAMPLE_RATE;
 
