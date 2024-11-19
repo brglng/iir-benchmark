@@ -32,5 +32,7 @@
 *.app
 
 *.pcm
-/build
-/.xmake
+build/
+.xmake/
+.cache/
+compile_commands.json
